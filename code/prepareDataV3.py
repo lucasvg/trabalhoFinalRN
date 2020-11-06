@@ -1,6 +1,10 @@
 import datetime
 import pandas as pd
 
+# ENUM
+UP = 1
+DOWN = 0
+
 def getDataFromIndicatorsForPrediction(amount, indicators):
     data = []
     for i in range(-1*(amount-1), 1):
@@ -13,12 +17,10 @@ def getDataFromIndicatorsForPrediction(amount, indicators):
 def generateTarget(backTestingData, amount, threshold = 0):
     target =  []
     for i in range(-1*(amount-1), 1):
-        if ((backTestingData.close[i+1]-backTestingData.close[i])/backTestingData.close[i] >= threshold):
-            target.append(2)
-        elif ((backTestingData.close[i+1]-backTestingData.close[i])/backTestingData.close[i] <= -threshold):
-            target.append(0)
+        if ((backTestingData.close[i+1]-backTestingData.close[i]) >= 0):
+            target.append(UP)
         else:
-            target.append(1)
+            target.append(DOWN)
     return target
 
 def prepareDataForTraining(backTestingData, amount, threshold, indicators):
