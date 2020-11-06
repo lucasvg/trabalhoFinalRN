@@ -19,7 +19,7 @@ def runBackTest(TESTS, NUMBER_OF_RUNS, TestStrategy, MySizer, DEFAULT_DT_FORMAT,
 
         for runNumber in range(NUMBER_OF_RUNS):
             TestStrategy.clf = test["clf"]
-            cerebro = bt.Cerebro(stdstats=True)
+            cerebro = bt.Cerebro(stdstats=False)
             cerebro.addstrategy(TestStrategy)
             cerebro.addsizer(MySizer)
             data = bt.feeds.GenericCSVData(
@@ -35,6 +35,10 @@ def runBackTest(TESTS, NUMBER_OF_RUNS, TestStrategy, MySizer, DEFAULT_DT_FORMAT,
         
             #https://www.backtrader.com/docu/commission-schemes/commission-schemes/
             cerebro.broker.setcommission(commission=0, margin=False, mult=1.0, leverage=100) 
+
+            cerebro.addobserver(bt.observers.Value)
+            cerebro.addobserver(bt.observers.Trades)
+            cerebro.addobserver(bt.observers.BuySell)
 
             results = cerebro.run()
 
