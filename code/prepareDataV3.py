@@ -1,5 +1,6 @@
 import datetime
 import pandas as pd
+from sklearn.preprocessing import MaxAbsScaler
 
 # ENUM
 UP = 1
@@ -12,6 +13,7 @@ def getDataFromIndicatorsForPrediction(amount, indicators):
         for indicator in indicators:
             line.append(indicator[i])
         data.append(line)
+    data = MaxAbsScaler().fit_transform(data).tolist()
     return data
 
 def generateTarget(backTestingData, amount, threshold = 0):
