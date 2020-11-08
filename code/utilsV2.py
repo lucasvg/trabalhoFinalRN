@@ -25,7 +25,8 @@ def runBackTest(TESTS, NUMBER_OF_RUNS, DEFAULT_DT_FORMAT, DEFAULT_FROM_DATE):
             statisticsPerTest.append(runTest(test, data))
             print("end run", runNumber)
 
-        testScoresPerTest = [np.mean([i['accuracy'] for i in statisticsPerTest])]
+        print(statisticsPerTest)
+        testScoresPerTest = [i['accuracy'] for i in statisticsPerTest]
         calcMeanStd('testScore', testScoresPerTest)
 
         end = time.time() 
