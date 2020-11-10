@@ -19,10 +19,14 @@ def getDataFromIndicatorsForPrediction(amount, indicators):
 def generateTarget(backTestingData, amount, threshold = 0):
     target =  []
     for i in range(-1*(amount-1), 1):
-        if ((backTestingData.close[i+1]-backTestingData.close[i]) >= 0):
+        try:
+            if ((backTestingData.close[i+1]-backTestingData.close[i]) >= 0):
+                target.append(UP)
+            else:
+                target.append(DOWN)
+        except IndexError:
+            print('end')
             target.append(UP)
-        else:
-            target.append(DOWN)
     return target
 
 def prepareDataForTraining(backTestingData, amount, threshold, indicators):
