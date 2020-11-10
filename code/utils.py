@@ -40,21 +40,41 @@ def runBackTest(TESTS, NUMBER_OF_RUNS, TestStrategy, MySizer, DEFAULT_DT_FORMAT,
             cerebro.addobserver(bt.observers.Trades)
             cerebro.addobserver(bt.observers.BuySell)
 
+            cerebro.addanalyzer(bt.analyzers.TradeAnalyzer, _name='TradeAnalyzer')
+
             results = cerebro.run()
 
             statistics = results[0] # for data0
+
+            print(str(statistics.analyzers.TradeAnalyzer.get_analysis()))
+
+            correctPredictions = 0
+            wrongPredictions = 0
+            for i in statistics.toMean['predictions']:
+                if(i[0] == i[1]):
+                    correctPredictions+=1
+                else:
+                    wrongPredictions+=1
+            accuracy = correctPredictions/(correctPredictions+wrongPredictions)
+            statistics.toMean['accuracy'] = accuracy
+            print(str({
+                'accuracy': accuracy,
+                'correctPredictions': correctPredictions,
+                'wrongPredictions': wrongPredictions
+            }))
             
             statisticsPerTest.append({
                 'toMean': statistics.toMean,
                 'portfolio': statistics.broker.getvalue(),
             })
+            
             if(runNumber == 0):
                 test['resultCerebro'] = cerebro
             print("end run", runNumber)
 
-
-        testScoresPerTest = [np.mean(j['testScores']['data']) for j in [i['toMean'] for i in statisticsPerTest]]
-        calcMeanStd('testScore', testScoresPerTest)
+        accuracy = [i['toMean']['accuracy'] for i in statisticsPerTest]
+        calcMeanStd('accuracy', accuracy)
+        
         calcMeanStd('portfolio', [i['portfolio'] for i in statisticsPerTest])
 
         end = time.time() 
