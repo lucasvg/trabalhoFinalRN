@@ -4,8 +4,6 @@ import numpy as np
 import time
 import backtrader as bt
 import ast
-from statsmodels.tsa.seasonal import STL
-from datetime import datetime
 
 
 def calcMeanStd(label, arr):
@@ -72,35 +70,3 @@ def runTest(test, dataset):
         'wrongPredictions': wrongPredictions,
         'accuracy': accuracy
     }
-
-
-def smoothCurve(data):
-    arr = []
-    for i in range(len(data)):
-        if i == 0:
-            arr.append(0)
-            continue
-        arr.append(data[i] - data[i-1])
-    return arr
-
-
-def STLDecomposition(csvData):
-    initialDate = datetime.strptime(
-        csvData.index[0], "%Y.%m.%d")
-    convertedDate = initialDate.strftime("%d-%m-%Y")
-
-    dict = {}
-
-    for column in csvData.columns[:-1]:
-        data = csvData[[column]]
-        flat_arr = data.to_numpy().flatten()
-        d = smoothCurve(flat_arr)[:1500]
-        series = pd.Series(d, index=pd.date_range(
-            convertedDate, periods=len(d), freq='D'), name=column)
-        stl = STL(series, seasonal=5, seasonal_deg=0,
-                  trend_deg=0, low_pass_deg=0, robust=True)
-        res = stl.fit()
-        dict[column] = [res.trend.to_numpy(), res.seasonal.to_numpy(),
-                        res.resid.to_numpy()]
-
-    return dict['open'], dict['highest'], dict['lowest'], dict['close'], dict['volume']
